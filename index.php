@@ -87,4 +87,3 @@ echo $s_html;
 //Insertion du bas de page d'OGSpy
 require_once("views/page_tail.php");
 
-?>

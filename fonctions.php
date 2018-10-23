@@ -21,8 +21,9 @@ require_once("views/page_header.php");
 // fonction calculant l'autonomie de production
 function autonomie($user_building,$ress)
 {
+    global $user_data;
 	$start = 101;
-	$nb_planete = find_nb_planete_user();
+	$nb_planete = find_nb_planete_user($user_data["user_id"]);
 	$result = array();//force l'interpretation de $result comme un array : retire des erreurs (silencieuses) dns le journal des PHP 5
 
 	for ($i=$start ; $i<=$start+$nb_planete-1 ; $i++) 
@@ -42,8 +43,9 @@ function autonomie($user_building,$ress)
 //fonction ressource lorsque que le plus petit silo est plein
 function ressourcespetithangar($autonomieM,$autonomieC,$autonomieD,$user_building)
 {
+    global $user_data;
 	$start = 101;
-	$nb_planete = find_nb_planete_user();
+	$nb_planete = find_nb_planete_user($user_data["user_id"]);
 	$result = array();//force l'interpretation de $result comme un array : retire des erreurs (silencieuses) dns le journal des PHP 5
 	
 	for ($i=$start ; $i<=$start+$nb_planete -1 ; $i++) 
@@ -78,8 +80,9 @@ function ressourcespetithangar($autonomieM,$autonomieC,$autonomieD,$user_buildin
 //on considere que toutes les mines continuent a produire (meme si leur silo associe est deja plein)
 function ressourcesgrandhangar($autonomieM,$autonomieC,$autonomieD,$user_building)
 {
+    global $user_data;
 	$start = 101;
-	$nb_planete = find_nb_planete_user();
+	$nb_planete = find_nb_planete_user($user_data["user_id"]);
 	$result = array();//force l'interpretation de $result comme un array : retire des erreurs (silencieuses) dns le journal des PHP 5
 	
 	for ($i=$start ; $i<=$start+$nb_planete -1 ; $i++) 
@@ -101,8 +104,9 @@ function ressourcesgrandhangar($autonomieM,$autonomieC,$autonomieD,$user_buildin
 // calcule le nombre de transporteurs necessaire pour une quantite de ressources donnees pour toutes les planetes
 function transporteur($ressources,$transporteur,$user_building)
 {
+    global $user_data;
 	$start = 101;
-	$nb_planete = find_nb_planete_user();
+	$nb_planete = find_nb_planete_user($user_data["user_id"]);
 	$result = array();//force l'interpretation de $result comme un array : retire des erreurs (silencieuses) dns le journal des PHP 5
 	
 	for ($i=$start ; $i<=$start+$nb_planete -1 ; $i++) 
@@ -126,11 +130,11 @@ function mine_production_empire($user_id)
 {
 	global $user_data, $db;
 	
-	$ta_user_empire = user_get_empire();
+	$ta_user_empire = user_get_empire($user_data["user_id"]);
 	$NRJ = $ta_user_empire["technology"]["NRJ"];
 	
 	$start=101;
-	$nb_planete = find_nb_planete_user();
+	$nb_planete = find_nb_planete_user($user_data["user_id"]);
 	// Recuperation des informations sur les mines
 	$planet = array(false, 'planet_name' => '', 'coordinates' => '', 'temperature' => '', 'Sat' => '',
 	'M' => 0, 'C' => 0, 'D' => 0, 'CES' => 0, 'CEF' => 0 ,
@@ -145,7 +149,7 @@ function mine_production_empire($user_id)
 			$user_building[$row['planet_id']] = $row;
 			$user_building[$row['planet_id']][0] = TRUE;
 		}
-	$user_empire = user_get_empire();
+	//$user_empire = user_get_empire($user_data["user_id"]);
 
 	// calcul des productions
 	unset($metal_heure);
@@ -179,7 +183,7 @@ function mine_production_empire($user_id)
 		
 					$production_CES = ( $CES_per / 100 ) * ( production ( "CES", $CES, $user_data['off_ingenieur'] ));
 					$production_CEF = ( $CEF_per / 100 ) * ( production ("CEF", $CEF, $user_data['off_ingenieur'] ));
-					$production_SAT = ( $SAT_per / 100 ) * ( production_sat ( $temperature_min, $temperature_max, $user_data['off_ingenieur'] ) * $SAT );
+					$production_SAT = ( $SAT_per / 100 ) * ( production_sat ( $temperature_max, $user_data['off_ingenieur'] ) * $SAT );
 		
 					$prod_energie = $production_CES + $production_CEF + $production_SAT;
 					
@@ -220,7 +224,7 @@ require_once("includes/user.php");
 global $user_data, $db;
 
 $start = 101; 
-$nb_planete = find_nb_planete_user();
+$nb_planete = find_nb_planete_user($user_data["user_id"]);
 // mines, hangars, productions, infos planetes
 $user_building = mine_production_empire($user_data['user_id']);
 //autonomie
@@ -341,7 +345,7 @@ for ($i=$start ; $i<=$start+$nb_planete -1 ; $i++) {
 		
 		//*Affichage des infos sur la planete
 	
-		$s_html .= '<tr><td rowspan="6" class="c"><center>'.$user_building[$i]['planet_name'].'<p style="margin-top: 0; margin-bottom: 0">'.$user_building[$i]['coordinates']."</p></center></td>\n";
+		$s_html .= '<tr><td rowspan="6" class="c" style="text-align: center;">' .$user_building[$i]['planet_name'].'<p style="margin-top: 0; margin-bottom: 0">'.$user_building[$i]['coordinates']. "</p></td>\n";
 		$s_html .= '<td></td>';
 		$s_html .= '<th>Niveau de la mine</th>';
 		$s_html .= '<th>Production par heure</th>';
@@ -389,8 +393,8 @@ for ($i=$start ; $i<=$start+$nb_planete -1 ; $i++) {
 			$s_html .= "</tr>\n\n<tr>";
 			$s_html .= '</table>';
 			$s_html .= '<table width="100%">';
-			$s_html .= '<tr><td class="c" width="70%">Pour augmenter l\'autonomie de cette planète, vous devriez améliorer votre <font color="lime">'.$petit_hangar.'</font></td>';
-			$s_html .= '<th width="30%"> Vous pouvez attendre <font color="'.$color.'">'.$autoplanete.' heures ('.round(($autoplanete)/24,1).' jours)</font> <br>avant de vider votre planète.</th></tr>';
+			$s_html .= '<tr><td class="c" width="70%">Pour augmenter l\'autonomie de cette planète, vous devriez améliorer votre <span style="color:lime; ">'.$petit_hangar.'</span></td>';
+			$s_html .= '<th width="30%"> Vous pouvez attendre <span style="color:'.$color.'">'.$autoplanete.' heures ('.round(($autoplanete)/24,1).' jours)</span> <br>avant de vider votre planète.</th></tr>';
 			$s_html .= '</table>';
 		$s_html .= '</td></tr>';
 		$s_html .= "</tr>\n\n<tr>";//';
@@ -432,9 +436,9 @@ $s_html .= '</table>';
 $s_html .= '<table width="31%" align="right">';
 $s_html .= '<tr>';
 $s_html .= '<th width="100%" height="50%">';
-$s_html .= '<font color="#00FF00">Vert = cette planète est autonome + de '.$seuil_autonomie_longue.' heures.</font><br>';
-$s_html .= '<font color="#FFFF00">Jaune = attention, cette planète est autonome entre '.$seuil_autonomie_courte.' et '.$seuil_autonomie_longue.' heures.</font><br>';
-$s_html .= '<font color="#FF0000">Rouge = cette planète risque fort de vous faire perdre des ressources, car son autonomie est inférieure à <?php $s_html .= $seuil_autonomie_courte; ?>h.</font>';
+$s_html .= '<span style="color: #00FF00; ">Vert = cette planète est autonome + de ' .$seuil_autonomie_longue. ' heures.</span><br>';
+$s_html .= '<span style="color: #FFFF00; ">Jaune = attention, cette planète est autonome entre ' .$seuil_autonomie_courte.' et '.$seuil_autonomie_longue. ' heures.</span><br>';
+$s_html .= '<span style="color: #FF0000; ">Rouge = cette planète risque fort de vous faire perdre des ressources, car son autonomie est inférieure à <?php $s_html .= $seuil_autonomie_courte; ?>h.</span>';
 $s_html .= '</th>';
 $s_html .= '</tr>';
 $s_html .= '</table>';
@@ -551,6 +555,7 @@ function f_historique()
 	$s_html_historique .= '<li>Mise à jour du charset</li>';
 	$s_html_historique .= '</ul></td>';
 	$s_html_historique .= '</tr>';
+    $s_html_historique .= '<tr>';
 	$s_html_historique .= '<th>1.7.0 par xaviernuma</th>';
 	$s_html_historique .= '<td>';
 	$s_html_historique .= '<ul>';
@@ -560,9 +565,16 @@ function f_historique()
 	$s_html_historique .= '</ul>';
 	$s_html_historique .= '</td>';
 	$s_html_historique .= '</tr>';
+    $s_html_historique .= '<tr>';
+    $s_html_historique .= '<th>1.7.2 par DarkNoon</th>';
+    $s_html_historique .= '<td>';
+    $s_html_historique .= '<ul>';
+    $s_html_historique .= '<li>Mise à Jour du code. (Compatibilité OGSpy 3.3.2)</li>';
+    $s_html_historique .= '</ul>';
+    $s_html_historique .= '</td>';
+    $s_html_historique .= '</tr>';
 	$s_html_historique .= '</table>';
 	
 	return $s_html_historique;
 }
 
-?>

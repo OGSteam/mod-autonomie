@@ -16,5 +16,3 @@ global $db;
 $mod_uninstall_name = "autonomie";
 
 uninstall_mod($mod_uninstall_name,$mod_uninstall_table);
-
-?>

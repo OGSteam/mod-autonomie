@@ -19,4 +19,3 @@ global $db;
 $mod_folder = "autonomie";
 install_mod($mod_folder);
 
-?>

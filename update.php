@@ -18,4 +18,3 @@ $mod_folder = "autonomie";
 $mod_name = "autonomie";
 update_mod($mod_folder,$mod_name);
 
-?>
