@@ -58,15 +58,15 @@ function ressourcespetithangar($autonomieM,$autonomieC,$autonomieD,$user_buildin
 					if (empty($autonomieC[$i])) $autonomieC[$i] = 9999999;
 					if (empty($autonomieD[$i])) $autonomieD[$i] = 9999999;
 
-					if($autonomieM[$i]<$autonomieC[$i] and $autonomieM[$i]<$autonomieD[$i])
+					if($autonomieM[$i]<=$autonomieC[$i] and $autonomieM[$i]<=$autonomieD[$i])
 						{
 							$temps= $autonomieM[$i];
 						}
-					elseif($autonomieC[$i]<$autonomieM[$i] and $autonomieC[$i]<$autonomieD[$i])
+					elseif($autonomieC[$i]<=$autonomieM[$i] and $autonomieC[$i]<=$autonomieD[$i])
 						{
 							$temps= $autonomieC[$i];
 						}
-					elseif($autonomieD[$i]<$autonomieM[$i] and $autonomieD[$i]<$autonomieC[$i])
+					elseif($autonomieD[$i]<=$autonomieM[$i] and $autonomieD[$i]<=$autonomieC[$i])
 						{
 							$temps= $autonomieD[$i];
 						}
