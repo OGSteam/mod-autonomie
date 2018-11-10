@@ -58,15 +58,15 @@ function ressourcespetithangar($autonomieM,$autonomieC,$autonomieD,$user_buildin
 					if (empty($autonomieC[$i])) $autonomieC[$i] = 9999999;
 					if (empty($autonomieD[$i])) $autonomieD[$i] = 9999999;
 
-					if($autonomieM[$i]<$autonomieC[$i] and $autonomieM[$i]<$autonomieD[$i])
+					if($autonomieM[$i]<=$autonomieC[$i] and $autonomieM[$i]<=$autonomieD[$i])
 						{
 							$temps= $autonomieM[$i];
 						}
-					elseif($autonomieC[$i]<$autonomieM[$i] and $autonomieC[$i]<$autonomieD[$i])
+					elseif($autonomieC[$i]<=$autonomieM[$i] and $autonomieC[$i]<=$autonomieD[$i])
 						{
 							$temps= $autonomieC[$i];
 						}
-					elseif($autonomieD[$i]<$autonomieM[$i] and $autonomieD[$i]<$autonomieC[$i])
+					elseif($autonomieD[$i]<=$autonomieM[$i] and $autonomieD[$i]<=$autonomieC[$i])
 						{
 							$temps= $autonomieD[$i];
 						}
@@ -268,30 +268,30 @@ for ($i=$start ; $i<=$start+$nb_planete -1 ; $i++) {
 		///////////////////////////////////////////////////////
 		//*hangar a augmenter +autonomie planetaire
 		if($autonomieD[$i]!= ''){
-			if($autonomieM[$i]<$autonomieC[$i] and $autonomieM[$i]<$autonomieD[$i]){
+			if($autonomieM[$i]<=$autonomieC[$i] and $autonomieM[$i]<=$autonomieD[$i]){
 				$petit_hangar= "Hangar de métal";
 				$somme_hangarM= $somme_hangarM+1;
 				$autoplanete=$autonomieM[$i];
 			}
-			elseif($autonomieC[$i]<$autonomieM[$i] and $autonomieC[$i]<$autonomieD[$i]){
+			elseif($autonomieC[$i]<=$autonomieM[$i] and $autonomieC[$i]<=$autonomieD[$i]){
 				$petit_hangar= "Hangar de cristal";
 				$somme_hangarC= $somme_hangarC+1;
 				$autoplanete=$autonomieC[$i];
 			}
 			// on fait attention a la production de deuterium nulle (quand pas de synthetiseur)
-			elseif($autonomieD[$i]<$autonomieM[$i] and $autonomieD[$i]<$autonomieC[$i]){
+			elseif($autonomieD[$i]<=$autonomieM[$i] and $autonomieD[$i]<=$autonomieC[$i]){
 				$petit_hangar= "Réservoir de deutérium";
 				$somme_hangarD= $somme_hangarD+1;
 				$autoplanete=$autonomieD[$i];
 			}
 		}
 		else{
-			if($autonomieM[$i]<$autonomieC[$i]){
+			if($autonomieM[$i]<=$autonomieC[$i]){
 				$petit_hangar= "Hangar de métal";
 				$somme_hangarM= $somme_hangarM+1;
 				$autoplanete=$autonomieM[$i];
 			}
-			elseif($autonomieC[$i]<$autonomieM[$i]){
+			elseif($autonomieC[$i]<=$autonomieM[$i]){
 				$petit_hangar= "Hangar de cristal";
 				$somme_hangarC= $somme_hangarC+1;
 				$autoplanete=$autonomieC[$i];
