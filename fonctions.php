@@ -573,6 +573,14 @@ function f_historique()
     $s_html_historique .= '</ul>';
     $s_html_historique .= '</td>';
     $s_html_historique .= '</tr>';
+    $s_html_historique .= '<tr>';
+    $s_html_historique .= '<th>1.7.4 par satepestage</th>';
+    $s_html_historique .= '<td>';
+    $s_html_historique .= '<ul>';
+    $s_html_historique .= '<li>Mise à Jour du code. (Compatibilité OGSpy 3.3.6)</li>';
+    $s_html_historique .= '</ul>';
+    $s_html_historique .= '</td>';
+    $s_html_historique .= '</tr>';
 	$s_html_historique .= '</table>';
 	
 	return $s_html_historique;
