@@ -132,6 +132,7 @@ function mine_production_empire($user_id)
 	
 	$ta_user_empire = user_get_empire($user_data["user_id"]);
 	$NRJ = $ta_user_empire["technology"]["NRJ"];
+	$Plasma = $ta_user_empire["technology"]["Plasma"];
 	
 	$start=101;
 	$nb_planete = find_nb_planete_user($user_data["user_id"]);
@@ -198,9 +199,9 @@ function mine_production_empire($user_id)
 					if ($ratio > 1) $ratio = 1;
 
 					// calcul de la production horaire
-					$user_building[$i]['M_hour'] = $ratio * ( production ( "M", $M, $user_data['off_geologue'] ));
-					$user_building[$i]['C_hour'] = $ratio * ( production ( "C", $C, $user_data['off_geologue'] ));
-					$user_building[$i]['D_hour'] = ( $ratio * ( production ( "D", $D, $user_data['off_geologue'], $temperature_max, $NRJ ))) - $consommation_CEF ;
+					$user_building[$i]['M_hour'] = $ratio * ( production ( "M", $M, $user_data['off_geologue'], $temperature_max, $NRJ, $Plasma ));
+					$user_building[$i]['C_hour'] = $ratio * ( production ( "C", $C, $user_data['off_geologue'], $temperature_max, $NRJ, $Plasma ));
+					$user_building[$i]['D_hour'] = ( $ratio * ( production ( "D", $D, $user_data['off_geologue'], $temperature_max, $NRJ, $Plasma ))) - $consommation_CEF ;
 		
 					// calcul des capacites par defaut
 					$user_building[$i]['HM_capacity'] = depot_capacity($HM);
