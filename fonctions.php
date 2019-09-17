@@ -102,12 +102,16 @@ function ressourcesgrandhangar($autonomieM,$autonomieC,$autonomieD,$user_buildin
 }
 
 // calcule le nombre de transporteurs necessaire pour une quantite de ressources donnees pour toutes les planetes
-function transporteur($ressources,$transporteur,$user_building)
+function transporteur($ressources,$transporteur,$user_building,$Hyp=0)
 {
     global $user_data;
 	$start = 101;
 	$nb_planete = find_nb_planete_user($user_data["user_id"]);
 	$result = array();//force l'interpretation de $result comme un array : retire des erreurs (silencieuses) dns le journal des PHP 5
+	// Calcul de la capacité des transporteurs
+	$Capac_GT = 25000 * 0.05 * $Hyp + 25000;
+	$Capac_PT = 5000 * 0.05 * $Hyp + 5000;
+
 	
 	for ($i=$start ; $i<=$start+$nb_planete -1 ; $i++) 
 		{
@@ -116,10 +120,10 @@ function transporteur($ressources,$transporteur,$user_building)
 			if($user_building[$i][0] === TRUE)
 				{
 					if($transporteur=="GT")
-					$result[$i]=ceil($ressources[$i]/25000);
+					$result[$i]=ceil($ressources[$i]/$Capac_GT);
 
 					if($transporteur=="PT")
-					$result[$i]=ceil($ressources[$i]/5000);
+					$result[$i]=ceil($ressources[$i]/$Capac_PT);
 				}
 		}
 	return $result;
@@ -228,6 +232,11 @@ $start = 101;
 $nb_planete = find_nb_planete_user($user_data["user_id"]);
 // mines, hangars, productions, infos planetes
 $user_building = mine_production_empire($user_data['user_id']);
+
+// Niveau technologie Hyperespace
+$ta_user_empire = user_get_empire($user_data["user_id"]);
+$Hyp = $ta_user_empire["technology"]["Hyp"];
+
 //autonomie
 $autonomieM=autonomie($user_building, 'M');
 $autonomieC=autonomie($user_building, 'C');
@@ -238,10 +247,10 @@ $ressourcesP=ressourcespetithangar($autonomieM,$autonomieC,$autonomieD,$user_bui
 $ressourcesG=ressourcesgrandhangar($autonomieM,$autonomieC,$autonomieD,$user_building);
 
 //transporteurs
-$maxGT=transporteur($ressourcesG,"GT",$user_building);
-$minGT=transporteur($ressourcesP,"GT",$user_building);
-$maxPT=transporteur($ressourcesG,"PT",$user_building);
-$minPT=transporteur($ressourcesP,"PT",$user_building);
+$maxGT=transporteur($ressourcesG,"GT",$user_building,$Hyp);
+$minGT=transporteur($ressourcesP,"GT",$user_building,$Hyp);
+$maxPT=transporteur($ressourcesG,"PT",$user_building,$Hyp);
+$minPT=transporteur($ressourcesP,"PT",$user_building,$Hyp);
 
 //*Fin calculs
 
