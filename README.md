@@ -4,7 +4,7 @@ Autonomie est un module pour OGSpy qui permet de calculer l'automie des colonies
 
 ### Pré Requis ###
 
-* Nécessite OGSpy 3.3.6 [Dépot OGSpy](https://github.com/ogsteam/ogspy)
+* Nécessite OGSpy 3.3.7 [Dépot OGSpy](https://github.com/ogsteam/ogspy)
 
 ### Configuration ###
 

@@ -1,7 +1,7 @@
 {
     "name" : "ogsteam/mod-autonomie",
     "description" : "OGSpy module that helps you to calculate autnomy of your colonies",
-    "version": "1.7.4",
+    "version": "1.7.5",
     "type" : "ogspy-mod",
     "keywords" : [ "ogspy" ],
     "license" : "GPL-2.0-only",
@@ -15,7 +15,7 @@
     ],
     "require" : {
         "php" : ">=7.0.0",
-        "ogsteam/ogspy" : ">=3.3.6"
+        "ogsteam/ogspy" : ">=3.3.7"
     },
     "extra" : {
             "install_script": "install.php",

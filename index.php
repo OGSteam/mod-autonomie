@@ -19,6 +19,7 @@ if (!defined('IN_SPYOGAME'))
 }
 
 require_once("views/page_header.php");
+require_once("includes/ogame.php");
 require_once("fonctions.php");
 
 

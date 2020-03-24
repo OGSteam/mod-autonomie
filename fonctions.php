@@ -132,11 +132,22 @@ function transporteur($ressources,$transporteur,$user_building,$Hyp=0)
 // Recupere les informations sur les mines, hangars, production...
 function mine_production_empire($user_id) 
 {
-	global $user_data, $db;
+	global $user_data, $db, $server_config;
 	
 	$ta_user_empire = user_get_empire($user_data["user_id"]);
 	$NRJ = $ta_user_empire["technology"]["NRJ"];
 	$Plasma = $ta_user_empire["technology"]["Plasma"];
+	 
+	//détection de la classe
+	$class_collect = ($user_data['user_class'] == 'COL') ? '1' : '0';
+	echo "<input type='hidden' id='class_collect' value='" . $class_collect . "'/>";
+
+	$ingenieur = ($user_data['off_ingenieur']);
+	echo "<input type='hidden' id='ingenieur' value='" . $ingenieur . "'/>";
+	$geologue = ($user_data['off_geologue']);
+	echo "<input type='hidden' id='off_geologue' value='" . $geologue . "'/>";
+	$speed = ($server_config['speed_uni']);
+	echo "<input type='hidden' id='speed' value='" . $speed . "'/>";
 	
 	$start=101;
 	$nb_planete = find_nb_planete_user($user_data["user_id"]);
@@ -144,9 +155,9 @@ function mine_production_empire($user_id)
 	$planet = array(false, 'planet_name' => '', 'coordinates' => '', 'temperature' => '', 'Sat' => '',
 	'M' => 0, 'C' => 0, 'D' => 0, 'CES' => 0, 'CEF' => 0 ,
 	'M_percentage' => 0, 'C_percentage' => 0, 'D_percentage' => 0, 'CES_percentage' => 100, 'CEF_percentage' => 100, 'Sat_percentage' => 100,
-	'HM' => 0, 'HC' => 0, 'HD' => 0);
+	'HM' => 0, 'HC' => 0, 'HD' => 0, 'FOR' => 0, 'FOR_percentage' => 0);
 
-	$quet = $db->sql_query('SELECT planet_id, planet_name, coordinates, temperature_min, temperature_max, Sat, M, C, D, CES, CEF, M_percentage, C_percentage, D_percentage, CES_percentage, CEF_percentage, Sat_percentage, HM, HC, HD FROM '.TABLE_USER_BUILDING.' WHERE user_id = '.$user_id.' ORDER BY planet_id');
+	$quet = $db->sql_query('SELECT planet_id, planet_name, coordinates, temperature_min, temperature_max, Sat, M, C, D, CES, CEF, M_percentage, C_percentage, D_percentage, CES_percentage, CEF_percentage, Sat_percentage, HM, HC, HD, `FOR`, FOR_percentage  FROM '.TABLE_USER_BUILDING.' WHERE user_id = '.$user_id.' ORDER BY planet_id');
 
 	$user_building = array_fill($start, $start+$nb_planete-1, $planet);
 	while ($row = $db->sql_fetch_row($quet)) 
@@ -180,32 +191,42 @@ function mine_production_empire($user_id)
 					$SAT_per = $user_building[$i]['Sat_percentage'];
 					$temperature_min = $user_building[$i]['temperature_min'];
 					$temperature_max = $user_building[$i]['temperature_max'];
+						
+					$class_collect = ($user_data['user_class'] == 'COL') ? '1' : '0';
+					$Foreuses = $user_building[$i]['FOR'];
+					$Foreuses_per = $user_building[$i]['FOR_percentage'];
 					
-					// $NRJ = $user_technology[$i]['NRJ'];
 					$HM = $user_building[$i]['HM'];
 					$HC = $user_building[$i]['HC'];
 					$HD = $user_building[$i]['HD'];
-		
-					$production_CES = ( $CES_per / 100 ) * ( production ( "CES", $CES, $user_data['off_ingenieur'] ));
-					$production_CEF = ( $CEF_per / 100 ) * ( production ("CEF", $CEF, $user_data['off_ingenieur'] ));
-					$production_SAT = ( $SAT_per / 100 ) * ( production_sat ( $temperature_max, $user_data['off_ingenieur'] ) * $SAT );
-		
+					$production_CES = ( $CES_per / 100 ) * ( production ( "CES", $CES, $ingenieur, $temperature_max ,$NRJ, $Plasma, $class_collect, $speed));
+					$production_CEF = ( $CEF_per / 100 ) * ( production ( "CEF", $CEF, $ingenieur, $temperature_max, $NRJ, $Plasma, $class_collect, $speed));
+					//$production_SAT = ( $SAT_per / 100 ) * ( production ( "SAT", $SAT, $temperature_max, $NRJ, $Plasma));
+					$production_SAT = ( $SAT_per / 100 ) * ( production_sat ( $temperature_max, $ingenieur, $class_collect, $SAT));
 					$prod_energie = $production_CES + $production_CEF + $production_SAT;
+					$consommation_M = ( $M_per / 100 ) * ( consumption ( "M", $M, $speed));
+					$consommation_C = ( $C_per / 100 ) * ( consumption ( "C", $C, $speed ));
+					$consommation_D = ( $D_per / 100 ) * ( consumption ( "D", $D, $speed ));
+					//$consommation_CEF = ($CEF_per / 100 ) * ( consumption("CEF", $CEF));
+					$consommation_CEF = ( consumption("CEF", $CEF, $speed));
 					
-					$consommation_M = ( $M_per / 100 ) * ( consumption ( "M", $M ));
-					$consommation_C = ( $C_per / 100 ) * ( consumption ( "C", $C ));
-					$consommation_D = ( $D_per / 100 ) * ( consumption ( "D", $D ));
-					$consommation_CEF = consumption("CEF", $CEF);
-					$cons_energie = $consommation_M + $consommation_C + $consommation_D;
-		
+					if ( $Foreuses > ($M + $C + $D) * 8 ) 
+					{
+					$Foreuses = ($M + $C + $D) * 8;
+					}
+
+					$consommation_FOR = ($Foreuses_per / 100) * (consumption("FOR", $Foreuses, $speed));
+					$cons_energie = $consommation_M + $consommation_C + $consommation_D + $consommation_FOR;
+					//$cons_energie = $consommation_M + $consommation_C + $consommation_D;
 					if ($cons_energie == 0) $cons_energie = 1;
 					$ratio = floor(($prod_energie/$cons_energie)*100)/100;
 					if ($ratio > 1) $ratio = 1;
-
 					// calcul de la production horaire
-					$user_building[$i]['M_hour'] = $ratio * ( production ( "M", $M, $user_data['off_geologue'], $temperature_max, $NRJ, $Plasma ));
-					$user_building[$i]['C_hour'] = $ratio * ( production ( "C", $C, $user_data['off_geologue'], $temperature_max, $NRJ, $Plasma ));
-					$user_building[$i]['D_hour'] = ( $ratio * ( production ( "D", $D, $user_data['off_geologue'], $temperature_max, $NRJ, $Plasma ))) - $consommation_CEF ;
+					$Prod_Foreuses = production_foreuse($Foreuses, $M, $C, $D, $temperature_max, $class_collect, $speed);
+
+					$user_building[$i]['M_hour'] = ($ratio * ( production ( "M", $M, $geologue, $temperature_max, $NRJ, $Plasma, $class_collect, $speed ))) + $Prod_Foreuses['M'];
+					$user_building[$i]['C_hour'] = $ratio * ( production ( "C", $C, $geologue, $temperature_max, $NRJ, $Plasma, $class_collect, $speed )) + $Prod_Foreuses['C'];
+					$user_building[$i]['D_hour'] = ( $ratio * ( production ( "D", $D, $geologue, $temperature_max, $NRJ, $Plasma, $class_collect, $speed ))) - $consommation_CEF + $Prod_Foreuses['D'] ;
 		
 					// calcul des capacites par defaut
 					$user_building[$i]['HM_capacity'] = depot_capacity($HM);
@@ -588,6 +609,14 @@ function f_historique()
     $s_html_historique .= '<td>';
     $s_html_historique .= '<ul>';
     $s_html_historique .= '<li>Mise à Jour du code. (Compatibilité OGSpy 3.3.6)</li>';
+    $s_html_historique .= '</ul>';
+    $s_html_historique .= '</td>';
+    $s_html_historique .= '</tr>';
+    $s_html_historique .= '<tr>';
+    $s_html_historique .= '<th>1.7.5 par satepestage</th>';
+    $s_html_historique .= '<td>';
+    $s_html_historique .= '<ul>';
+    $s_html_historique .= '<li>Prise en compte v7 de Ogame. (Compatibilité OGSpy 3.3.7)</li>';
     $s_html_historique .= '</ul>';
     $s_html_historique .= '</td>';
     $s_html_historique .= '</tr>';
