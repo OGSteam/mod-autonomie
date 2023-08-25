@@ -229,9 +229,9 @@ function mine_production_empire($user_id)
 					$user_building[$i]['D_hour'] = ( $ratio * ( production ( "D", $D, $geologue, $temperature_max, $NRJ, $Plasma, $class_collect, $speed ))) - $consommation_CEF + $Prod_Foreuses['D'] ;
 		
 					// calcul des capacites par defaut
-					$user_building[$i]['HM_capacity'] = depot_capacity($HM);
-					$user_building[$i]['HC_capacity'] = depot_capacity($HC);
-					$user_building[$i]['HD_capacity'] = depot_capacity($HD);
+					$user_building[$i]['HM_capacity'] = ogame_depot_capacity($HM);
+					$user_building[$i]['HC_capacity'] = ogame_depot_capacity($HC);
+					$user_building[$i]['HD_capacity'] = ogame_depot_capacity($HD);
 				} // fin du test d'existence de la planete
 		}
 	return $user_building;
